@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type CSSProperties } from 'react'
 import '../App.css'
 
 interface MusicPlayerProps {
   src: string
   trackName: string
   forceAutoplay?: boolean
-  style?: React.CSSProperties
+  style?: CSSProperties
 }
 
 export function MusicPlayer({ src, trackName, forceAutoplay = false, style }: MusicPlayerProps) {
@@ -16,20 +16,23 @@ export function MusicPlayer({ src, trackName, forceAutoplay = false, style }: Mu
     const audio = audioRef.current
     if (!audio) return
 
-    // Resetar estado ao mudar a música
-    setIsPlaying(false)
+    audio.pause()
+    audio.currentTime = 0
     
     // Configura volume inicial
     audio.volume = 0.4
     audio.muted = false
 
+    const onPlay = () => setIsPlaying(true)
+    const onPause = () => setIsPlaying(false)
+    audio.addEventListener('play', onPlay)
+    audio.addEventListener('pause', onPause)
+
     const playAudio = async () => {
       try {
         await audio.play()
-        setIsPlaying(true)
-      } catch (err) {
-        // Se falhar (bloqueio do navegador), apenas silenciamos o erro
-        // e aguardamos a interação do usuário nos listeners abaixo.
+      } catch {
+        return
       }
     }
 
@@ -47,8 +50,7 @@ export function MusicPlayer({ src, trackName, forceAutoplay = false, style }: Mu
     const enableSound = () => {
       if (audio && audio.paused) {
         audio.play()
-          .then(() => setIsPlaying(true))
-          .catch(() => {})
+          .catch(() => undefined)
       }
       
       // Se já estiver tocando, removemos os listeners
@@ -72,6 +74,8 @@ export function MusicPlayer({ src, trackName, forceAutoplay = false, style }: Mu
 
     return () => {
       cleanupListeners()
+      audio.removeEventListener('play', onPlay)
+      audio.removeEventListener('pause', onPause)
     }
   }, [src, forceAutoplay]) 
 
@@ -80,9 +84,8 @@ export function MusicPlayer({ src, trackName, forceAutoplay = false, style }: Mu
       if (isPlaying) {
         audioRef.current.pause()
       } else {
-        audioRef.current.play()
+        audioRef.current.play().catch(() => undefined)
       }
-      setIsPlaying(!isPlaying)
     }
   }
 

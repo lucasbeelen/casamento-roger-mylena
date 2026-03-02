@@ -6,7 +6,7 @@ import { Reveal } from '../components/Reveal'
 import { useCart } from '../context/CartContext'
 
 export function Checkout() {
-  const { cart, addToCart, removeFromCart, totalItems, totalPrice } = useCart()
+  const { cart, addToCart, removeFromCart, totalPrice } = useCart()
   const [message, setMessage] = useState('')
   const [buyerName, setBuyerName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -28,7 +28,7 @@ export function Checkout() {
     setLoading(true)
     setError(null)
     
-    const handle = siteContent.giftRegistry.infinitePay?.handle
+    const handle = siteContent.giftRegistry.infinitePay?.handle as string | undefined
     if (!handle || handle === 'seahandle') {
         alert('Atenção: Configure o handle da InfinitePay em siteContent.ts')
         setLoading(false)

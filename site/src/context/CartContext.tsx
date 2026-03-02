@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 import { siteContent } from '../content/siteContent'
 
 interface CartContextType {
@@ -23,8 +23,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart(prev => {
       const current = prev[id] || 0
       if (current <= 1) {
-        const { [id]: _, ...rest } = prev
-        return rest
+        const next = { ...prev }
+        delete next[id]
+        return next
       }
       return { ...prev, [id]: current - 1 }
     })
