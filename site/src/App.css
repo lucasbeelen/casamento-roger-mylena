@@ -309,12 +309,16 @@ h1, h2, h3, h4, p {
   background-attachment: fixed;
   background-position: center;
   background-size: cover;
+  background-repeat: no-repeat;
   position: relative;
 }
 
 @media (max-width: 600px) {
   .parallax-band {
-    background-position: 30% 50%; /* mobile */
+    background-attachment: scroll;
+    background-position: center;
+    background-size: contain;
+    background-color: var(--cream);
   }
 }
 
