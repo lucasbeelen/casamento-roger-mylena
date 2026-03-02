@@ -14,7 +14,7 @@ export const siteContent = {
     ],
   },
   seasideWedding: {
-    title: 'Nosso Casamento na Praia',
+    title: 'Nosso Casamento',
     features: [
       {
         title: 'Recepção',
@@ -23,7 +23,7 @@ export const siteContent = {
       {
         title: 'Traje',
         body:
-          'Beach Formal (Praia Chique) — Linho, tecidos leves, vestidos fluidos, bermuda social. Camisa branca de linho é uma ótima pedida. Evite salto fino e roupas pesadas; pé na areia e brisa do mar!',
+          'Beach Formal (Praia Chique) — Linho, tecidos leves, vestidos fluidos, bermuda social. Camisa branca de linho é uma ótima pedida. Evite salto fino e roupas pesadas, PROIBIDO a cor AZUL!; pé na areia e brisa do mar!',
       },
     ],
   },
