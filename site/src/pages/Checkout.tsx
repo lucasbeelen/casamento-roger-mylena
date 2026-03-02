@@ -54,13 +54,13 @@ export function Checkout() {
     const origin = window.location.origin
     const orderNsu = `ORDER-${Date.now()}`
 
-    // Use proxy in development to avoid CORS issues
-    const baseUrl = import.meta.env.DEV 
-      ? '/infinitepay-api' 
-      : 'https://api.infinitepay.io'
+    // Use /api/checkout proxy both in dev and prod
+    // In dev: Vite proxy redirects /api/checkout -> InfinitePay
+    // In prod: Vercel serverless function handles /api/checkout -> InfinitePay
+    const baseUrl = '/api'
 
     try {
-        const response = await fetch(`${baseUrl}/invoices/public/checkout/links`, {
+        const response = await fetch(`${baseUrl}/checkout`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

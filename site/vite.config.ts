@@ -8,10 +8,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/infinitepay-api': {
-        target: 'https://api.infinitepay.io',
+      '/api/checkout': {
+        target: 'https://api.infinitepay.io/invoices/public/checkout/links',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/infinitepay-api/, ''),
+        rewrite: () => '', // Remove o path, pois o target já é a URL completa
       },
     },
   },
