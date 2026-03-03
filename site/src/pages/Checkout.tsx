@@ -11,6 +11,7 @@ export function Checkout() {
   const [buyerName, setBuyerName] = useState('')
   const [buyerEmail, setBuyerEmail] = useState('')
   const [buyerPhone, setBuyerPhone] = useState('')
+  const [buyerCpf, setBuyerCpf] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -46,6 +47,15 @@ export function Checkout() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   }
 
+  const formatCpf = (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1')
+  }
+
   const createPaymentLink = async () => {
     setLoading(true)
     setError(null)
@@ -72,6 +82,13 @@ export function Checkout() {
     const normalizedPhone = normalizePhoneBR(buyerPhone)
     if (!normalizedPhone) {
         alert('Por favor, digite um telefone/WhatsApp válido (ex: (82) 99999-9999).')
+        setLoading(false)
+        return
+    }
+
+    const cpfClean = buyerCpf.replace(/\D/g, '')
+    if (cpfClean.length !== 11) {
+        alert('Por favor, digite um CPF válido (11 dígitos).')
         setLoading(false)
         return
     }
@@ -108,7 +125,8 @@ export function Checkout() {
                 customer: {
                     name: buyerName.trim(),
                     email: buyerEmail.trim(),
-                    phone_number: normalizedPhone
+                    phone_number: normalizedPhone,
+                    document_number: cpfClean
                 }
             })
         })
@@ -277,6 +295,26 @@ export function Checkout() {
                     value={buyerPhone}
                     onChange={(e) => setBuyerPhone(e.target.value)}
                     placeholder="(82) 99999-9999"
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      borderRadius: 8,
+                      border: '1px solid rgba(15, 39, 64, 0.2)',
+                      backgroundColor: 'transparent',
+                      fontFamily: 'inherit',
+                      color: 'var(--navy)'
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 15 }}>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Seu CPF</label>
+                  <input
+                    type="text"
+                    value={buyerCpf}
+                    onChange={(e) => setBuyerCpf(formatCpf(e.target.value))}
+                    placeholder="000.000.000-00"
+                    maxLength={14}
                     style={{
                       width: '100%',
                       padding: 12,
