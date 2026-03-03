@@ -23,7 +23,7 @@ export const siteContent = {
       {
         title: 'Traje',
         body:
-          'Beach Formal (Praia Chique) — Linho, tecidos leves, vestidos fluidos, bermuda social. Camisa branca de linho é uma ótima pedida. Evite salto fino e roupas pesadas, PROIBIDO a cor AZUL!; pé na areia e brisa do mar!',
+          'Beach Formal (Praia Chique) — Linho, tecidos leves, vestidos fluidos. Camisa branca de linho é uma ótima pedida. Evite salto fino e roupas pesadas, PROIBIDO a cor AZUL!',
       },
     ],
   },
@@ -32,8 +32,8 @@ export const siteContent = {
     items: [
       { time: '16:00', label: 'Boas-vindas e Fotos' },
       { time: '17:00', label: 'Cerimônia' },
-      { time: '18:00', label: 'Open Bar & Sunset' },
-      { time: '19:00', label: 'Jantar e Festa' },
+      { time: '18:00', label: 'Open Bar' },
+      { time: '19:00', label: 'Jantar' },
     ],
   },
   faq: {
@@ -82,7 +82,6 @@ export const siteContent = {
       handle: 'mylena-regina-21w', // Substitua pelo seu handle da InfinitePay (sem o $)
     },
     products: [
-      { id: 999, name: 'TESTE DE PAGAMENTO', price: 'R$ 1,00', image: '/julius.jpeg' },
       { id: 1, name: 'Pra não te dizer que não dei nada', price: 'R$ 90,00', image: '/julius.jpeg' },
       { id: 4, name: 'Primeiro lugar na fila do buffe', price: 'R$ 250,00', image: '/buffet.jpeg' },
       { id: 6, name: 'Pra chamar alguém que não é convidado', price: 'R$ 700,00', image: '/notcovinidado.jpeg' },

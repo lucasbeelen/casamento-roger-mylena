@@ -4,6 +4,7 @@ import '../App.css'
 import { siteContent } from '../content/siteContent'
 import { Reveal } from '../components/Reveal'
 import { useCart } from '../context/CartContext'
+import { MusicPlayer } from '../components/MusicPlayer'
 
 export function Checkout() {
   const { cart, addToCart, removeFromCart, totalPrice } = useCart()
@@ -161,6 +162,8 @@ export function Checkout() {
           </Link>
         </div>
       </header>
+
+      <MusicPlayer src="/tequila.mp3" trackName="Tequila • The Champs" />
 
       <main className="container" style={{ paddingTop: 40, paddingBottom: 120 }}>
         <Reveal>
