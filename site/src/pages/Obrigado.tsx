@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { siteContent } from '../content/siteContent'
 import { useCart } from '../context/CartContext'
@@ -10,26 +10,34 @@ export function Obrigado() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null)
   
-  // UseState para garantir que a verificação de pagamento ocorra apenas uma vez
-  const [hasCheckedPayment, setHasCheckedPayment] = useState(false) 
+  // Ref para garantir execução única
+  const processedRef = useRef(false)
 
   useEffect(() => {
-    // Se já verificou, não faz nada
-    if (hasCheckedPayment) return
+    // Se já processou nesta sessão de memória, para.
+    if (processedRef.current) return
+    
+    const transactionNsu = searchParams.get('transaction_nsu')
+
+    // Se já existe no localStorage, considera processado e para.
+    if (transactionNsu && localStorage.getItem(`processed_txn_${transactionNsu}`)) {
+        console.log('Transação já processada (cache local).')
+        setStatus('success')
+        clearCart()
+        processedRef.current = true
+        return
+    }
 
     const checkPayment = async () => {
-      // Marca como verificado imediatamente para evitar chamadas duplas
-      setHasCheckedPayment(true)
-
+      // Marca imediatamente para evitar race condition
+      processedRef.current = true
+      
       const handle = siteContent.giftRegistry.infinitePay?.handle
       const orderNsu = searchParams.get('order_nsu')
-      const transactionNsu = searchParams.get('transaction_nsu')
       const slug = searchParams.get('slug')
       const urlReceipt = searchParams.get('receipt_url')
 
-      if (urlReceipt) {
-        setReceiptUrl(urlReceipt)
-      }
+      if (urlReceipt) setReceiptUrl(urlReceipt)
 
       if (!handle || !orderNsu || !transactionNsu || !slug) {
         console.error('Missing params')
@@ -37,29 +45,12 @@ export function Obrigado() {
         return
       }
 
-      // Verifica se já processamos essa transação específica no localStorage
-      const processedTransaction = localStorage.getItem(`processed_txn_${transactionNsu}`)
-      if (processedTransaction) {
-        console.log('Transação já processada anteriormente.')
-        setStatus('success')
-        clearCart()
-        return
-      }
-
       try {
         const baseUrl = '/api'
-
         const response = await fetch(`${baseUrl}/payment-check`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                handle,
-                order_nsu: orderNsu,
-                transaction_nsu: transactionNsu,
-                slug: slug
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ handle, order_nsu: orderNsu, transaction_nsu: transactionNsu, slug: slug })
         })
 
         if (response.ok) {
@@ -67,7 +58,7 @@ export function Obrigado() {
             if (data.paid) {
                 setStatus('success')
                 
-                // Marca transação como processada para evitar reenvio em refresh
+                // Marca no localStorage para bloquear futuros refreshs
                 localStorage.setItem(`processed_txn_${transactionNsu}`, 'true')
 
                 const savedName = localStorage.getItem('pending_purchase_name') || 'Anônimo'
@@ -80,6 +71,7 @@ export function Obrigado() {
                 
                 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-zKoudLK0QDmz61wOlZN5BGkSdYkMNMhSd1YOj5A7BbxbUGephV-RWH65BsfTfoKh/exec'
                 
+                // Dispara o POST para o Google Script
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -110,7 +102,8 @@ export function Obrigado() {
 
     checkPayment()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Array vazio para rodar apenas na montagem
+  }, []) 
+ // Array vazio para rodar apenas na montagem
 
   return (
     <div className="app" style={{ minHeight: '100vh', backgroundColor: 'var(--sky)', position: 'relative', overflow: 'hidden' }}>
