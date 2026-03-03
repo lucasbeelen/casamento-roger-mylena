@@ -120,6 +120,10 @@ export function Checkout() {
                 localStorage.setItem('pending_purchase_msg', message)
                 localStorage.setItem('pending_purchase_name', buyerName)
                 
+                // Salvar lista de presentes
+                const presentList = cartItems.map(item => `${item.qty}x ${item.name}`).join(', ')
+                localStorage.setItem('pending_purchase_items', presentList)
+
                 window.location.href = data.url
             } else {
                 throw new Error('URL de pagamento não retornada')

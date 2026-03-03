@@ -9,9 +9,18 @@ export function Obrigado() {
   const { clearCart } = useCart()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null)
+  
+  // UseState para garantir que a verificação de pagamento ocorra apenas uma vez
+  const [hasCheckedPayment, setHasCheckedPayment] = useState(false) 
 
   useEffect(() => {
+    // Se já verificou, não faz nada
+    if (hasCheckedPayment) return
+
     const checkPayment = async () => {
+      // Marca como verificado imediatamente para evitar chamadas duplas
+      setHasCheckedPayment(true)
+
       const handle = siteContent.giftRegistry.infinitePay?.handle
       const orderNsu = searchParams.get('order_nsu')
       const transactionNsu = searchParams.get('transaction_nsu')
@@ -23,16 +32,21 @@ export function Obrigado() {
       }
 
       if (!handle || !orderNsu || !transactionNsu || !slug) {
-        // Se faltar parâmetros, talvez não seja um retorno válido
         console.error('Missing params')
         setStatus('error')
         return
       }
 
+      // Verifica se já processamos essa transação específica no localStorage
+      const processedTransaction = localStorage.getItem(`processed_txn_${transactionNsu}`)
+      if (processedTransaction) {
+        console.log('Transação já processada anteriormente.')
+        setStatus('success')
+        clearCart()
+        return
+      }
+
       try {
-        // Use /api/payment-check proxy both in dev and prod
-        // In dev: Vite proxy redirects /api/payment-check -> InfinitePay
-        // In prod: Vercel serverless function handles /api/payment-check -> InfinitePay
         const baseUrl = '/api'
 
         const response = await fetch(`${baseUrl}/payment-check`, {
@@ -53,32 +67,35 @@ export function Obrigado() {
             if (data.paid) {
                 setStatus('success')
                 
-                // Envia notificação de compra para o Google Apps Script
+                // Marca transação como processada para evitar reenvio em refresh
+                localStorage.setItem(`processed_txn_${transactionNsu}`, 'true')
+
                 const savedName = localStorage.getItem('pending_purchase_name') || 'Anônimo'
                 const savedMessage = localStorage.getItem('pending_purchase_msg') || '-'
+                const savedItems = localStorage.getItem('pending_purchase_items') || 'Presentes'
                 
-                // Limpa localStorage
                 localStorage.removeItem('pending_purchase_name')
                 localStorage.removeItem('pending_purchase_msg')
+                localStorage.removeItem('pending_purchase_items')
                 
-                // URL do Web App do Google Apps Script
                 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-zKoudLK0QDmz61wOlZN5BGkSdYkMNMhSd1YOj5A7BbxbUGephV-RWH65BsfTfoKh/exec'
                 
-                // Dispara sem await para não bloquear a UI
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
                         type: 'purchase',
+                        transactionId: transactionNsu, 
                         nome: savedName,
+                        presentes: savedItems,
                         mensagem: savedMessage,
                         valor: (data.amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
                         metodo: data.capture_method
                     })
                 }).catch(err => console.error('Erro ao notificar compra:', err))
 
-                clearCart() // Limpa o carrinho pois foi pago
+                clearCart()
             } else {
                 setStatus('error')
             }
@@ -92,7 +109,8 @@ export function Obrigado() {
     }
 
     checkPayment()
-  }, [searchParams, clearCart])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Array vazio para rodar apenas na montagem
 
   return (
     <div className="app" style={{ minHeight: '100vh', backgroundColor: 'var(--sky)', position: 'relative', overflow: 'hidden' }}>

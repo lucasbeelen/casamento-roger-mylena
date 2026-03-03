@@ -18,6 +18,14 @@ export function Home() {
       setScrolled(window.scrollY > 50)
     }
     window.addEventListener('scroll', onScroll)
+
+    // Check if user has already RSVP'd
+    const savedRsvp = localStorage.getItem('rsvp_sent')
+    if (savedRsvp) {
+      setRsvpSubmitted(true)
+      setRsvpName(savedRsvp)
+    }
+
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -54,6 +62,7 @@ const handleRsvpSubmit = async (e: React.FormEvent) => {
 
       // alert(`Obrigado, ${rsvpName}! Sua presença foi confirmada e enviada para nossa lista.`)
       setRsvpSubmitted(true)
+      localStorage.setItem('rsvp_sent', rsvpName)
       // setRsvpName('')
       // setRsvpMessage('')
       
