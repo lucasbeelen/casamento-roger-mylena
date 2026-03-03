@@ -30,11 +30,12 @@ export function Obrigado() {
       }
 
       try {
-        const baseUrl = import.meta.env.DEV 
-          ? '/infinitepay-api' 
-          : 'https://api.infinitepay.io'
+        // Use /api/payment-check proxy both in dev and prod
+        // In dev: Vite proxy redirects /api/payment-check -> InfinitePay
+        // In prod: Vercel serverless function handles /api/payment-check -> InfinitePay
+        const baseUrl = '/api'
 
-        const response = await fetch(`${baseUrl}/invoices/public/checkout/payment_check`, {
+        const response = await fetch(`${baseUrl}/payment-check`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

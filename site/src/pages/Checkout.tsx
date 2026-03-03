@@ -11,7 +11,6 @@ export function Checkout() {
   const [buyerName, setBuyerName] = useState('')
   const [buyerEmail, setBuyerEmail] = useState('')
   const [buyerPhone, setBuyerPhone] = useState('')
-  const [buyerCpf, setBuyerCpf] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -47,15 +46,6 @@ export function Checkout() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   }
 
-  const formatCpf = (value: string) => {
-    return value
-      .replace(/\D/g, '')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d{1,2})/, '$1-$2')
-      .replace(/(-\d{2})\d+?$/, '$1')
-  }
-
   const createPaymentLink = async () => {
     setLoading(true)
     setError(null)
@@ -82,13 +72,6 @@ export function Checkout() {
     const normalizedPhone = normalizePhoneBR(buyerPhone)
     if (!normalizedPhone) {
         alert('Por favor, digite um telefone/WhatsApp válido (ex: (82) 99999-9999).')
-        setLoading(false)
-        return
-    }
-
-    const cpfClean = buyerCpf.replace(/\D/g, '')
-    if (cpfClean.length !== 11) {
-        alert('Por favor, digite um CPF válido (11 dígitos).')
         setLoading(false)
         return
     }
@@ -125,8 +108,7 @@ export function Checkout() {
                 customer: {
                     name: buyerName.trim(),
                     email: buyerEmail.trim(),
-                    phone_number: normalizedPhone,
-                    document_number: cpfClean
+                    phone_number: normalizedPhone
                 }
             })
         })
@@ -248,7 +230,7 @@ export function Checkout() {
             {/* Checkout Form */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', zIndex: 10 }}>
               <div className="checkout-card" style={{ backgroundColor: 'var(--cream)', padding: 30, borderRadius: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-                <h3 style={{ marginBottom: 20, color: 'var(--navy)' }}>Mensagem para os Noivos</h3>
+                <h3 style={{ marginBottom: 20, color: 'var(--navy)' }}>Preencha seus dados</h3>
                 
                 <div style={{ marginBottom: 15 }}>
                   <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Seu Nome Completo</label>
@@ -307,28 +289,8 @@ export function Checkout() {
                   />
                 </div>
 
-                <div style={{ marginBottom: 15 }}>
-                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Seu CPF</label>
-                  <input
-                    type="text"
-                    value={buyerCpf}
-                    onChange={(e) => setBuyerCpf(formatCpf(e.target.value))}
-                    placeholder="000.000.000-00"
-                    maxLength={14}
-                    style={{
-                      width: '100%',
-                      padding: 12,
-                      borderRadius: 8,
-                      border: '1px solid rgba(15, 39, 64, 0.2)',
-                      backgroundColor: 'transparent',
-                      fontFamily: 'inherit',
-                      color: 'var(--navy)'
-                    }}
-                  />
-                </div>
-
                 <div>
-                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Sua Mensagem</label>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Sua Mensagem para os noivos!</label>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
