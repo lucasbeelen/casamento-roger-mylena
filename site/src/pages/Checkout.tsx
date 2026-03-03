@@ -9,6 +9,8 @@ export function Checkout() {
   const { cart, addToCart, removeFromCart, totalPrice } = useCart()
   const [message, setMessage] = useState('')
   const [buyerName, setBuyerName] = useState('')
+  const [buyerEmail, setBuyerEmail] = useState('')
+  const [buyerPhone, setBuyerPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,6 +26,26 @@ export function Checkout() {
     return parseFloat(priceStr.replace('R$', '').replace('.', '').replace(',', '.').trim())
   }
 
+  const normalizePhoneBR = (raw: string) => {
+    const digits = raw.replace(/\D/g, '')
+
+    if (!digits) return null
+
+    if (digits.startsWith('55') && digits.length >= 12) {
+      return `+${digits}`
+    }
+
+    if ((digits.length === 10 || digits.length === 11) && !digits.startsWith('0')) {
+      return `+55${digits}`
+    }
+
+    return null
+  }
+
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
   const createPaymentLink = async () => {
     setLoading(true)
     setError(null)
@@ -37,6 +59,19 @@ export function Checkout() {
 
     if (!buyerName.trim()) {
         alert('Por favor, digite seu nome completo.')
+        setLoading(false)
+        return
+    }
+
+    if (!buyerEmail.trim() || !isValidEmail(buyerEmail.trim())) {
+        alert('Por favor, digite um e-mail válido.')
+        setLoading(false)
+        return
+    }
+
+    const normalizedPhone = normalizePhoneBR(buyerPhone)
+    if (!normalizedPhone) {
+        alert('Por favor, digite um telefone/WhatsApp válido (ex: (82) 99999-9999).')
         setLoading(false)
         return
     }
@@ -69,7 +104,12 @@ export function Checkout() {
                 handle: handle,
                 items: itemsPayload,
                 order_nsu: orderNsu,
-                redirect_url: `${origin}/obrigado`
+                redirect_url: `${origin}/obrigado`,
+                customer: {
+                    name: buyerName.trim(),
+                    email: buyerEmail.trim(),
+                    phone_number: normalizedPhone
+                }
             })
         })
 
@@ -199,6 +239,44 @@ export function Checkout() {
                     value={buyerName}
                     onChange={(e) => setBuyerName(e.target.value)}
                     placeholder="Digite seu nome"
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      borderRadius: 8,
+                      border: '1px solid rgba(15, 39, 64, 0.2)',
+                      backgroundColor: 'transparent',
+                      fontFamily: 'inherit',
+                      color: 'var(--navy)'
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 15 }}>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Seu E-mail</label>
+                  <input
+                    type="email"
+                    value={buyerEmail}
+                    onChange={(e) => setBuyerEmail(e.target.value)}
+                    placeholder="seuemail@exemplo.com"
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      borderRadius: 8,
+                      border: '1px solid rgba(15, 39, 64, 0.2)',
+                      backgroundColor: 'transparent',
+                      fontFamily: 'inherit',
+                      color: 'var(--navy)'
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 15 }}>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold', color: 'var(--navy)' }}>Seu WhatsApp</label>
+                  <input
+                    type="tel"
+                    value={buyerPhone}
+                    onChange={(e) => setBuyerPhone(e.target.value)}
+                    placeholder="(82) 99999-9999"
                     style={{
                       width: '100%',
                       padding: 12,
