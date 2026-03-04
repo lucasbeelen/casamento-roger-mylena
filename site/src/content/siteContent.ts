@@ -21,9 +21,9 @@ export const siteContent = {
         body: 'Será realizado no Residencial Angra de Ipioca, F7 e F8, Ipioca, Maceió AL.',
       },
       {
-        title: 'Traje',
+        title: 'dress code',
         body:
-          'Beach Formal (Praia Chique) — Linho, tecidos leves, vestidos fluidos. Camisa branca de linho é uma ótima pedida. Evite salto fino e roupas pesadas, PROIBIDO a cor AZUL!',
+          'Para celebrar este momento tão especial, sugerimos trajes leves e fluidos. Aos homens, recomendamos tecidos leves e alfaiataria. Às mulheres, vestidos longos e calçados baixos, priorizando elegância e conforto.\n\nSolicitamos gentilmente que os convidados evitem tons de branco, off-white, creme e azul, cores reservadas para identidade visual da noiva e da celebração.',
       },
     ],
   },

@@ -141,7 +141,7 @@ const handleRsvpSubmit = async (e: React.FormEvent) => {
               <div className="feature-card feature-card--clean">
                 <img src="/conchas.svg" alt="" className="feature-icon" />
                 <h3 className="feature-title">{siteContent.seasideWedding.features[1].title}</h3>
-                <p className="feature-body">{siteContent.seasideWedding.features[1].body}</p>
+                <p className="feature-body" style={{ whiteSpace: 'pre-line' }}>{siteContent.seasideWedding.features[1].body}</p>
               </div>
             </div>
           </Reveal>
