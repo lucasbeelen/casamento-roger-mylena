@@ -21,7 +21,7 @@ export const siteContent = {
         body: 'Será realizado no Residencial Angra de Ipioca, F7 e F8, Ipioca, Maceió AL.',
       },
       {
-        title: 'dress code',
+        title: 'Dress Code',
         body:
           'Para celebrar este momento tão especial, sugerimos trajes leves e fluidos. Aos homens, recomendamos tecidos leves e alfaiataria. Às mulheres, vestidos longos e calçados baixos, priorizando elegância e conforto.\n\nSolicitamos gentilmente que os convidados evitem tons de branco, off-white, creme e azul, cores reservadas para identidade visual da noiva e da celebração.',
       },
